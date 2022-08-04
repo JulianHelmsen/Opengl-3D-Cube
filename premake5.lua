@@ -18,15 +18,22 @@ project "3D-Cube"
 	}
 
 	includedirs {
-		"thirdparty/GLFW/include"
+		"thirdparty/GLFW/include",
+		"thirdparty/GLEW/include",
+		"thirdparty/glm"
 	}
 	libdirs {
-		"thirdparty/GLFW/lib-vc2022"
+		"thirdparty/GLFW/lib-vc2022",
+		"thirdparty/GLEW/lib/Release/x64"
 	}
 
 	links {
-		"glfw3.lib"
+		"glfw3.lib",
+		"Opengl32",
+		"glew32s"
 	}
+
+	defines { "GLEW_STATIC" }
 
 	filter "configurations:Debug"
 		defines {"DEBUG"}
