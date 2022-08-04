@@ -1,6 +1,7 @@
 
 workspace "3D-Cube"
 	configurations { "Debug", "Release" }
+	architecture "x86_64"
 
 project "3D-Cube"
 	kind "ConsoleApp"
@@ -13,6 +14,17 @@ project "3D-Cube"
 		"3d-cube/src/**.cpp",
 		"3d-cube/src/**.h",
 		"3d-cube/src/**.hpp"
+	}
+
+	includedirs {
+		"thirdparty/GLFW/include"
+	}
+	libdirs {
+		"thirdparty/GLFW/lib-vs2022"
+	}
+
+	links {
+		"glfw3.lib"
 	}
 
 	filter "configurations:Debug"
