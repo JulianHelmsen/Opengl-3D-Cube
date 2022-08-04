@@ -1,0 +1,8 @@
+.vs
+3d-cube/obj
+**.vcxproj
+**.vcxproj.user
+**.sln
+**~
+**.swp
+bin
