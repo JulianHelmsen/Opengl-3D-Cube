@@ -8,6 +8,7 @@ project "3D-Cube"
 	language "C++"
 	location "3d-cube"
 	targetdir "bin/%{cfg.buildcfg}"
+	cppdialect "C++17"
 
 
 	files {
@@ -20,7 +21,7 @@ project "3D-Cube"
 		"thirdparty/GLFW/include"
 	}
 	libdirs {
-		"thirdparty/GLFW/lib-vs2022"
+		"thirdparty/GLFW/lib-vc2022"
 	}
 
 	links {

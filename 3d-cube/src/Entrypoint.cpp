@@ -3,8 +3,16 @@
 
 int main(const int argc, const char** argv) {
 	glfwInit();
-	int a = 4;
-	printf("Hello World\n");
+
+
+	GLFWwindow* window = glfwCreateWindow(1020, 720, "Window", NULL, NULL);
+
+	while (!glfwWindowShouldClose(window)) {
+
+		glfwPollEvents();
+	}
+
+
 	return 0;
 
 }
