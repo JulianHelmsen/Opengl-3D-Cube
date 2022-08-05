@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "app.h"
+
 
 int main(const int argc, const char** argv) {
 	printf("Hello World\n");
@@ -14,10 +17,15 @@ int main(const int argc, const char** argv) {
 	}
 
 	glfwMakeContextCurrent(window);
+	glewInit();
+	onInit();
 
 	while (!glfwWindowShouldClose(window)) {
+		onRender();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 }
