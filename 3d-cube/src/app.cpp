@@ -1,6 +1,7 @@
 #include "app.h"
 #include <GL/glew.h>
 #include "shader.h"
+#include "file_utils.h"
 
 GLuint vertexArray;
 GLuint vertexBuffer;
@@ -27,21 +28,11 @@ void onInit() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, nullptr);
 
-	const char* vs_source_code = ""
-		"#version 400 core\n"
-		"\n"
-		"layout(location = 0) in vec3 position;"
-		"void main() {\n"
-		"gl_Position = vec4 (position, 1.0);"
-		"}";
 
-	const char* fs_source_code = ""
-		"#version 400 core\n"
-		"\n"
-		"out vec4 color;"
-		"void main() {\n"
-		"color = vec4(0.0, 0.0, 1.0, 1.0);"
-		"}";
+	std::string vertex_source = utils::read_file("resources/vertex_shader.glsl");
+	std::string fragnent_source = utils::read_file("resources/fragment_shader.glsl");
+
+	printf("%s\n", vertex_source.c_str());
 	
-	program = createShader(vs_source_code, fs_source_code);
+	program = createShader(vertex_source.c_str(), fragnent_source.c_str());
 }
