@@ -8,13 +8,13 @@ GLuint vertexBuffer;
 GLuint indexBuffer;
 GLuint program;
 
-void onRender() {
+void onRender(float time, float delta_time) {
 	glUseProgram(program);
 	glBindVertexArray(vertexArray);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }
 
-void onInit() {
+void onInit(int width, int height) {
 	GLfloat vertices[] = {0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, -0.5f, 0.0f};
 	GLuint connectionOrder[] = { 1, 0, 2, 1, 2, 3 };
 	glGenVertexArrays(1, &vertexArray);

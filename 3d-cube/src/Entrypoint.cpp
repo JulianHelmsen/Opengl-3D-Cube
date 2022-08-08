@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <chrono>
 #include "app.h"
 
 
@@ -9,7 +10,9 @@ int main(const int argc, const char** argv) {
 
 	if(!glfwInit()) return -1;
 
-	GLFWwindow* window = glfwCreateWindow(1920, 1080, "BigJ", nullptr, nullptr);
+	const int width = 1920;
+	const int height = 1080;
+	GLFWwindow* window = glfwCreateWindow(width, height, "BigJ", nullptr, nullptr);
 
 	if (!window) {
 		glfwTerminate();
@@ -18,10 +21,15 @@ int main(const int argc, const char** argv) {
 
 	glfwMakeContextCurrent(window);
 	glewInit();
-	onInit();
-
+	onInit(width, height);
+	auto prev = std::chrono::high_resolution_clock::now();
+	float accu_time = 0.0f;
 	while (!glfwWindowShouldClose(window)) {
-		onRender();
+		auto now = std::chrono::high_resolution_clock::now();
+		float time_diff = 1e-6f * std::chrono::duration_cast<std::chrono::microseconds>(now - prev).count();
+		prev = now;
+		onRender(accu_time += time_diff, time_diff);
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		glClearColor(0, 0, 0, 1);
