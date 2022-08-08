@@ -19,6 +19,10 @@ int main(const int argc, const char** argv) {
 		return -1;
 	}
 
+	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int w, int h) -> void {
+		onResize(w, h);
+	});
+
 	glfwMakeContextCurrent(window);
 	glewInit();
 	onInit(width, height);

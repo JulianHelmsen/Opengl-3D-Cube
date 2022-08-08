@@ -9,6 +9,7 @@ GLuint indexBuffer;
 GLuint program;
 
 void onRender(float time, float delta_time) {
+	printf("%f\n", time);
 	glUseProgram(program);
 	glBindVertexArray(vertexArray);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -35,4 +36,8 @@ void onInit(int width, int height) {
 	printf("%s\n", vertex_source.c_str());
 	
 	program = createShader(vertex_source.c_str(), fragment_source.c_str());
+}
+
+
+void onResize(int width, int height) {
 }
