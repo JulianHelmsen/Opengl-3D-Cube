@@ -2,22 +2,78 @@
 #include <GL/glew.h>
 #include "shader.h"
 #include "file_utils.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 GLuint vertexArray;
 GLuint vertexBuffer;
 GLuint indexBuffer;
 GLuint program;
+GLint mvp_matrix_location;
 
 void onRender(float time, float delta_time) {
-	printf("%f\n", time);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(program);
 	glBindVertexArray(vertexArray);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+	glm::mat4 projection_matrix = glm::perspective(1.0f/2.0f * 3.141f, 1920.0f / 1080.0f, 0.01f, 1000.0f);
+	
+	glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f))
+		* glm::rotate(glm::mat4(1.0f), time, glm::vec3(1.0f, 0.0f, 0.0f))
+		* glm::rotate(glm::mat4(1.0f), 0.5f * time, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 mvp_matrix = projection_matrix * model_matrix;
+	glUniformMatrix4fv(mvp_matrix_location, 1, GL_FALSE, &mvp_matrix[0][0]);
 }
 
 void onInit(int width, int height) {
-	GLfloat vertices[] = {0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, -0.5f, 0.0f};
-	GLuint connectionOrder[] = { 1, 0, 2, 1, 2, 3 };
+	GLfloat vertices[] = {
+		// front           red
+		-0.5f, -0.5, 0.5f, 1.0f, 0.0f, 0.0f, 
+		0.5f, -0.5, 0.5f, 1.0f, 0.0f, 0.0f,
+		0.5f, 0.5, 0.5f, 1.0f, 0.0f, 0.0f,
+		-0.5f, 0.5, 0.5f, 1.0f, 0.0f, 0.0f,
+		// back            green
+		-0.5f, -0.5, -0.5f, 0.0f, 1.0f, 0.0f,
+		0.5f, -0.5, -0.5f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5, -0.5f, 0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5, -0.5f, 0.0f, 1.0f, 0.0f,
+		// bottom          blue
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.5f,  0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f,  0.0f, 0.0f, 1.0f,
+		// top			   yellow
+		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f,
+		// left            
+		-0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
+		-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
+		// right
+		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
+		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+		0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
+	};
+
+	GLuint connectionOrder[] = {
+		// front
+		0, 1, 2, 0, 2, 3,
+		// back
+		4, 5, 6, 4, 6, 7,
+		// bottom
+		8, 9, 10, 8, 10, 11,
+		// top
+		12, 13, 14, 12, 14, 15,
+		// left
+		16, 17, 18, 16, 18, 19,
+		// right
+		20, 21, 22, 20, 22, 23
+	};
+
 	glGenVertexArrays(1, &vertexArray);
 	glBindVertexArray(vertexArray);
 	glGenBuffers(1, &vertexBuffer);
@@ -27,8 +83,12 @@ void onInit(int width, int height) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(connectionOrder), connectionOrder, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, nullptr);
-
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, nullptr);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (const void*)(3 * sizeof(GLfloat)));
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	
 
 	std::string vertex_source = utils::read_file("resources/vertex_shader.glsl");
 	std::string fragment_source = utils::read_file("resources/fragment_shader.glsl");
@@ -36,8 +96,10 @@ void onInit(int width, int height) {
 	printf("%s\n", vertex_source.c_str());
 	
 	program = createShader(vertex_source.c_str(), fragment_source.c_str());
+	mvp_matrix_location = glGetUniformLocation(program, "mvp_matrix");
 }
 
 
 void onResize(int width, int height) {
+
 }
