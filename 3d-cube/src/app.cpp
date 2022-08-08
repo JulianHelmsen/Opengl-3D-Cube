@@ -30,9 +30,9 @@ void onInit(int width, int height) {
 
 
 	std::string vertex_source = utils::read_file("resources/vertex_shader.glsl");
-	std::string fragnent_source = utils::read_file("resources/fragment_shader.glsl");
+	std::string fragment_source = utils::read_file("resources/fragment_shader.glsl");
 
 	printf("%s\n", vertex_source.c_str());
 	
-	program = createShader(vertex_source.c_str(), fragnent_source.c_str());
+	program = createShader(vertex_source.c_str(), fragment_source.c_str());
 }
