@@ -10,19 +10,19 @@ GLuint vertexBuffer;
 GLuint indexBuffer;
 GLuint program;
 GLint mvp_matrix_location;
+glm::mat4 projection_matrix;
 
 void onRender(float time, float delta_time) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(program);
 	glBindVertexArray(vertexArray);
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
-	glm::mat4 projection_matrix = glm::perspective(1.0f/2.0f * 3.141f, 1920.0f / 1080.0f, 0.01f, 1000.0f);
 	
 	glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f))
 		* glm::rotate(glm::mat4(1.0f), time, glm::vec3(1.0f, 0.0f, 0.0f))
 		* glm::rotate(glm::mat4(1.0f), 0.5f * time, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 mvp_matrix = projection_matrix * model_matrix;
 	glUniformMatrix4fv(mvp_matrix_location, 1, GL_FALSE, &mvp_matrix[0][0]);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 }
 
 void onInit(int width, int height) {
@@ -93,13 +93,14 @@ void onInit(int width, int height) {
 	std::string vertex_source = utils::read_file("resources/vertex_shader.glsl");
 	std::string fragment_source = utils::read_file("resources/fragment_shader.glsl");
 
-	printf("%s\n", vertex_source.c_str());
 	
 	program = createShader(vertex_source.c_str(), fragment_source.c_str());
 	mvp_matrix_location = glGetUniformLocation(program, "mvp_matrix");
+	projection_matrix = glm::perspective(0.5f * 3.141f, (float)width / height, 0.01f, 1000.0f);
 }
 
 
 void onResize(int width, int height) {
-
+	glViewport(0, 0, width, height);
+	projection_matrix = glm::perspective(0.5f * 3.141f, (float) width / height, 0.01f, 1000.0f);
 }
