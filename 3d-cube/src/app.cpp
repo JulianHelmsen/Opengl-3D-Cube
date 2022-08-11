@@ -11,6 +11,9 @@ GLuint indexBuffer;
 GLuint program;
 GLint mvp_matrix_location;
 glm::mat4 projection_matrix;
+glm::vec3 camera_position;
+float rotation_x;
+float rotation_y;
 
 void onRender(float time, float delta_time) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -20,7 +23,10 @@ void onRender(float time, float delta_time) {
 	glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f))
 		* glm::rotate(glm::mat4(1.0f), time, glm::vec3(1.0f, 0.0f, 0.0f))
 		* glm::rotate(glm::mat4(1.0f), 0.5f * time, glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 mvp_matrix = projection_matrix * model_matrix;
+	glm::mat4 view_matrix = glm::translate(glm::mat4(1.0f), -camera_position)
+		* glm::rotate(glm::mat4(1.0f), -rotation_y, glm::vec3(0.0f, 1.0f, 0.0f))
+		* glm::rotate(glm::mat4(1.0f), -rotation_x, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 mvp_matrix = projection_matrix * view_matrix * model_matrix;
 	glUniformMatrix4fv(mvp_matrix_location, 1, GL_FALSE, &mvp_matrix[0][0]);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 }
