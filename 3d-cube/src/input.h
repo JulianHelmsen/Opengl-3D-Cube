@@ -3,10 +3,10 @@
 class input
 {
 public:
-	static float getDeltaXPos();
-	static float getDeltaYPos();
+
+	static void getMouseDelta(float* x, float* y);
 	static void setWindow(GLFWwindow* windowPtr);
-	static bool isButtonPressed();
+	static bool isButtonPressed(int keycode);
 private:
 
 };

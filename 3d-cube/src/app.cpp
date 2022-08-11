@@ -4,6 +4,7 @@
 #include "file_utils.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "input.h"
 
 GLuint vertexArray;
 GLuint vertexBuffer;
@@ -13,7 +14,7 @@ GLint mvp_matrix_location;
 glm::mat4 projection_matrix;
 glm::vec3 camera_position;
 float rotation_x;
-float rotation_y;
+float rotation_y = 3.1415f * 0.25f;
 
 void onRender(float time, float delta_time) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -21,14 +22,46 @@ void onRender(float time, float delta_time) {
 	glBindVertexArray(vertexArray);
 	
 	glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f))
-		* glm::rotate(glm::mat4(1.0f), time, glm::vec3(1.0f, 0.0f, 0.0f))
-		* glm::rotate(glm::mat4(1.0f), 0.5f * time, glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 view_matrix = glm::translate(glm::mat4(1.0f), -camera_position)
-		* glm::rotate(glm::mat4(1.0f), -rotation_y, glm::vec3(0.0f, 1.0f, 0.0f))
-		* glm::rotate(glm::mat4(1.0f), -rotation_x, glm::vec3(1.0f, 0.0f, 0.0f));
+		* glm::rotate(glm::mat4(1.0f), 0.0f * time, glm::vec3(1.0f, 0.0f, 0.0f))
+		* glm::rotate(glm::mat4(1.0f), 0.0f * 0.5f * time, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	glm::mat4 view_rotation_matrix = glm::rotate(glm::mat4(1.0f), rotation_y, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), rotation_x, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 view_matrix = glm::inverse(glm::translate(glm::mat4(1.0f), camera_position)
+		* view_rotation_matrix);
 	glm::mat4 mvp_matrix = projection_matrix * view_matrix * model_matrix;
 	glUniformMatrix4fv(mvp_matrix_location, 1, GL_FALSE, &mvp_matrix[0][0]);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+
+
+	constexpr glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f);
+	constexpr glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f);
+
+	glm::vec3 camera_forward = glm::vec3(view_rotation_matrix * glm::vec4(forward, 0.0f));
+	glm::vec3 camera_right = glm::vec3(view_rotation_matrix * glm::vec4(right, 0.0f));
+
+	camera_forward.y = 0.0f;
+
+	float delta_x, delta_y;
+
+	input::getMouseDelta(&delta_x, &delta_y);
+	rotation_x += delta_y * 0.001f;
+	rotation_y -= delta_x * 0.001f;
+
+
+
+	if (input::isButtonPressed('W'))
+		camera_position += delta_time * camera_forward;
+	if (input::isButtonPressed('S'))
+		camera_position -= delta_time * camera_forward;
+	if (input::isButtonPressed('D'))
+		camera_position += delta_time * camera_right;
+	if (input::isButtonPressed('A'))
+		camera_position -= delta_time * camera_right;
+	if (input::isButtonPressed(' '))
+		camera_position.y += delta_time;
+	if (input::isButtonPressed(GLFW_KEY_LEFT_SHIFT))
+		camera_position.y -= delta_time;
+	
 }
 
 void onInit(int width, int height) {

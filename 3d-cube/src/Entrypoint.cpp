@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include "app.h"
-
+#include "input.h"
 
 int main(const int argc, const char** argv) {
 	printf("Hello World\n");
@@ -13,6 +13,14 @@ int main(const int argc, const char** argv) {
 	const int width = 1920;
 	const int height = 1080;
 	GLFWwindow* window = glfwCreateWindow(width, height, "BigJ", nullptr, nullptr);
+
+#if 0	
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+#else
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+#endif
+
+	input::setWindow(window);
 
 	if (!window) {
 		glfwTerminate();
