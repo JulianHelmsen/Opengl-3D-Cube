@@ -15,7 +15,8 @@ GLuint indexBuffer;
 GLuint program;
 GLuint texture;
 GLuint time_location;
-GLint mvp_matrix_location;
+GLint vp_matrix_location;
+GLint model_matrix_location;
 glm::mat4 projection_matrix;
 glm::vec3 camera_position;
 float rotation_x;
@@ -34,8 +35,9 @@ void onRender(float time, float delta_time) {
 	glm::mat4 view_rotation_matrix = glm::rotate(glm::mat4(1.0f), rotation_y, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), rotation_x, glm::vec3(1.0f, 0.0f, 0.0f));
 	glm::mat4 view_matrix = glm::inverse(glm::translate(glm::mat4(1.0f), camera_position)
 		* view_rotation_matrix);
-	glm::mat4 mvp_matrix = projection_matrix * view_matrix * model_matrix;
-	glUniformMatrix4fv(mvp_matrix_location, 1, GL_FALSE, &mvp_matrix[0][0]);
+	glm::mat4 vp_matrix = projection_matrix * view_matrix;
+	glUniformMatrix4fv(vp_matrix_location, 1, GL_FALSE, &vp_matrix[0][0]);
+	glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE, &model_matrix[0][0]);
 	glUniform1f(time_location, time);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 
@@ -149,7 +151,8 @@ void onInit(int width, int height) {
 
 	
 	program = createShader(vertex_source.c_str(), fragment_source.c_str());
-	mvp_matrix_location = glGetUniformLocation(program, "mvp_matrix");
+	vp_matrix_location = glGetUniformLocation(program, "vp_matrix");
+	model_matrix_location = glGetUniformLocation(program, "model_matrix");
 	time_location = glGetUniformLocation(program, "time");
 	projection_matrix = glm::perspective(0.5f * 3.141f, (float)width / height, 0.01f, 1000.0f);
 
