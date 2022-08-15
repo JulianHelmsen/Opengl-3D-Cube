@@ -14,6 +14,7 @@ GLuint vertexBuffer;
 GLuint indexBuffer;
 GLuint program;
 GLuint texture;
+GLuint time_location;
 GLint mvp_matrix_location;
 glm::mat4 projection_matrix;
 glm::vec3 camera_position;
@@ -35,6 +36,7 @@ void onRender(float time, float delta_time) {
 		* view_rotation_matrix);
 	glm::mat4 mvp_matrix = projection_matrix * view_matrix * model_matrix;
 	glUniformMatrix4fv(mvp_matrix_location, 1, GL_FALSE, &mvp_matrix[0][0]);
+	glUniform1f(time_location, time);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 
 
@@ -133,9 +135,11 @@ void onInit(int width, int height) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(connectionOrder), connectionOrder, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, nullptr);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 8, nullptr);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (const void*)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 8, (const void*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 8, (const void*)(6* sizeof(GLfloat)));
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	
@@ -146,10 +150,10 @@ void onInit(int width, int height) {
 	
 	program = createShader(vertex_source.c_str(), fragment_source.c_str());
 	mvp_matrix_location = glGetUniformLocation(program, "mvp_matrix");
+	time_location = glGetUniformLocation(program, "time");
 	projection_matrix = glm::perspective(0.5f * 3.141f, (float)width / height, 0.01f, 1000.0f);
 
-	GLuint texture = loadTextureFromDisc("recources/shine_sprite_image.jpg");
-
+	texture = loadTextureFromDisc("resources/shine_sprite_image.jpg");
 }
 
 
