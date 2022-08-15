@@ -20,7 +20,8 @@ project "3D-Cube"
 	includedirs {
 		"thirdparty/GLFW/include",
 		"thirdparty/GLEW/include",
-		"thirdparty/glm"
+		"thirdparty/glm",
+		"thirdparty/stb"
 	}
 	libdirs {
 		"thirdparty/GLFW/lib-vc2022",
