@@ -8,6 +8,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#define PI (3.1415926f)
+
 GLuint vertexArray;
 GLuint vertexBuffer;
 GLuint indexBuffer;
@@ -16,7 +18,7 @@ GLint mvp_matrix_location;
 glm::mat4 projection_matrix;
 glm::vec3 camera_position;
 float rotation_x;
-float rotation_y = 3.1415f * 0.25f;
+float rotation_y = PI * 0.25f;
 
 void onRender(float time, float delta_time) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -46,23 +48,29 @@ void onRender(float time, float delta_time) {
 	float delta_x, delta_y;
 
 	input::getMouseDelta(&delta_x, &delta_y);
-	rotation_x += delta_y * 0.001f;
-	rotation_y -= delta_x * 0.001f;
+	rotation_x += delta_y * 0.003f;
+	rotation_y -= delta_x * 0.003f;
+
+	if (rotation_x < -0.5f * PI)
+		rotation_x = -0.5f * PI;
+	else if (rotation_x > 0.5f * PI)
+		rotation_x = 0.5f * PI;
+
 
 
 
 	if (input::isButtonPressed('W'))
-		camera_position += delta_time * camera_forward;
+		camera_position += 2.0f * delta_time * camera_forward;
 	if (input::isButtonPressed('S'))
-		camera_position -= delta_time * camera_forward;
+		camera_position -= 2.0f * delta_time * camera_forward;
 	if (input::isButtonPressed('D'))
-		camera_position += delta_time * camera_right;
+		camera_position += 2.0f * delta_time * camera_right;
 	if (input::isButtonPressed('A'))
-		camera_position -= delta_time * camera_right;
+		camera_position -= 2.0f * delta_time * camera_right;
 	if (input::isButtonPressed(' '))
-		camera_position.y += delta_time;
+		camera_position.y += 2.0f * delta_time;
 	if (input::isButtonPressed(GLFW_KEY_LEFT_SHIFT))
-		camera_position.y -= delta_time;
+		camera_position.y -= 2.0f * delta_time;
 	
 }
 
