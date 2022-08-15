@@ -5,8 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "input.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include "texture.h"
 
 #define PI (3.1415926f)
 
@@ -14,6 +13,7 @@ GLuint vertexArray;
 GLuint vertexBuffer;
 GLuint indexBuffer;
 GLuint program;
+GLuint texture;
 GLint mvp_matrix_location;
 glm::mat4 projection_matrix;
 glm::vec3 camera_position;
@@ -24,6 +24,7 @@ void onRender(float time, float delta_time) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(program);
 	glBindVertexArray(vertexArray);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	
 	glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f))
 		* glm::rotate(glm::mat4(1.0f), 0.0f * time, glm::vec3(1.0f, 0.0f, 0.0f))
@@ -146,6 +147,9 @@ void onInit(int width, int height) {
 	program = createShader(vertex_source.c_str(), fragment_source.c_str());
 	mvp_matrix_location = glGetUniformLocation(program, "mvp_matrix");
 	projection_matrix = glm::perspective(0.5f * 3.141f, (float)width / height, 0.01f, 1000.0f);
+
+	GLuint texture = loadTextureFromDisc("recources/shine_sprite_image.jpg");
+
 }
 
 
